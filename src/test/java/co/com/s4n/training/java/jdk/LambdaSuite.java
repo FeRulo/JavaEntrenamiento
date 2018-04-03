@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.IntBinaryOperator;
+import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
 
 public class LambdaSuite {
@@ -115,6 +116,36 @@ public class LambdaSuite {
 
         instancia.operarConConsumer(c1);
 
+
+    }
+
+    public interface Calculadora{
+        default double operar(int x, int y, DoubleBinaryOperator fn){
+            return fn.applyAsDouble(x, y);
+        }
+    }
+
+    public class Calculadorota implements Calculadora{
+
+    }
+
+    @Test
+    public void pruebaCalculadora(){
+        DoubleBinaryOperator sumador = (x,y)-> x+y+8;
+        DoubleBinaryOperator restador = (x,y)-> x-y+1;
+        DoubleBinaryOperator multiplicador = (x,y)-> x*y+1;
+        DoubleBinaryOperator divisor = (x,y)-> x/y+1;
+
+        Calculadorota c = new Calculadorota();
+        double resultadoSuma = c.operar(1,2,sumador);
+        double resultadoResta = c.operar(1,2,restador);
+        double resultadoProducto = c.operar(1,2,multiplicador);
+        double resultadoDivision = c.operar(1,2,divisor);
+
+        assertEquals(11.0,resultadoSuma, 0.01);
+        assertEquals(0.0,resultadoResta, 0.01);
+        assertEquals(3.0,resultadoProducto, 0.01);
+        assertEquals(1.5,resultadoDivision, 0.01);
 
     }
 
