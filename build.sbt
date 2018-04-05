@@ -13,6 +13,9 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= Seq(
       "io.vavr" % "vavr" % "0.9.2",
       "junit" % "junit" % "4.12" % "test",
+      "org.mockito" % "mockito-core" % "2.8.47" % "test",
+      "org.powermock" % "powermock" % "1.6.6" pomOnly(),
       "com.novocode" % "junit-interface" % "0.11" % "test"
     )
   )
+
