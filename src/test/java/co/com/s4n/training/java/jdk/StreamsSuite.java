@@ -197,7 +197,7 @@ public class StreamsSuite {
                     return s.toUpperCase();
                 })
                 .anyMatch(s -> {
-                    return s.startsWith("A");
+                    return s.startsWith("D");
                 });
 
         assertTrue(b);
@@ -337,9 +337,7 @@ public class StreamsSuite {
                 .collect(Collectors.averagingInt(p -> p.age));
 
         assertEquals(averageAge, 19D, 0D);
-
     }
-
 
     //FlatMap
 
@@ -357,11 +355,26 @@ public class StreamsSuite {
 
     @Test
     public void collectingPersons(){
-        Stream<CollectablePerson> personas = Stream.of(new CollectablePerson("Juan", 10), new CollectablePerson("Felipe", 20));
-
+        Stream<CollectablePerson> personas = Stream.of(new CollectablePerson("Juan", 10),
+                new CollectablePerson("Felipe", 20),
+                new CollectablePerson("Fercho", 30),
+                new CollectablePerson("Mariana", 20)
+        );
         CollectablePerson persona = personas.collect(new PersonCollector());
+        System.out.println("persona: " + persona.name);
+    }
 
-        System.out.println("persona:" + persona.name);
+    @Test
+    public void marianaTest(){
+        String str = "mariana";
+        Stream<String> stringStream = str.codePoints()
+                .mapToObj(c -> String.valueOf((char) c));
+        stringStream = stringStream.map(s -> {
+                                return s.toUpperCase();
+                            });
+        Optional<String> str2 = stringStream.findFirst();
+        System.out.println(str2);
+        assertEquals("M",str2.orElseGet(()->"NONE"));
     }
     //Reduce
     //ParalellStreams

@@ -11,13 +11,14 @@ import java.util.stream.Collector;
 public class PersonCollector implements Collector<CollectablePerson, CollectablePerson, CollectablePerson> {
     @Override
     public Supplier<CollectablePerson> supplier() {
+        System.out.println("supplier nuevo");
         return CollectablePerson::new;
     }
 
     @Override
     public BiConsumer<CollectablePerson, CollectablePerson> accumulator() {
         return (CollectablePerson p1, CollectablePerson p2) -> {
-            System.out.println("accumulator: "+ p1.name+ " "+p2.name);
+            System.out.println("accumulator:    "+ p1.name+ " "+p2.name + ", " + (p1.age + p2.age));
             p1.addName(p2.name);
             p1.addAge(p2.age);
         };
