@@ -2,7 +2,7 @@ package co.com.s4n.training.java.jdk;
 
 import static org.junit.Assert.*;
 
-import co.com.s4n.training.java.MyClass;
+import co.com.s4n.training.java.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -117,6 +117,10 @@ public class StreamsSuite {
                 this.i = i;
             }
 
+            public MyClass(Integer i){
+                this.i = i.intValue();
+            }
+
             @Override
             public String toString(){
                 return String.valueOf(i);
@@ -131,6 +135,22 @@ public class StreamsSuite {
 
         List<MyClass> nuevaLista = Stream.of(1, 2, 0, 3, 4)
                 .map(x -> new MyClass(x.intValue()))
+                .collect(Collectors.toList());
+
+
+        assertTrue(nuevaLista.size()==5);
+        assertTrue(nuevaLista.get(0).toString().equals("1"));
+
+    }
+
+    @Test
+    public void stramsContienenObjetos3(){
+
+
+        // Esta conversion no funciona :(
+        List<MyClassWithInt> nuevaLista = Stream
+                .of(1, 2, 0, 3, 4)
+                .map(MyClassWithInt::new)
                 .collect(Collectors.toList());
 
 
@@ -177,7 +197,7 @@ public class StreamsSuite {
                     return s.toUpperCase();
                 })
                 .anyMatch(s -> {
-                    return s.startsWith("A");
+                    return s.startsWith("D");
                 });
 
         assertTrue(b);
@@ -317,9 +337,7 @@ public class StreamsSuite {
                 .collect(Collectors.averagingInt(p -> p.age));
 
         assertEquals(averageAge, 19D, 0D);
-
     }
-
 
     //FlatMap
 
@@ -334,10 +352,33 @@ public class StreamsSuite {
         assertTrue(collect.size()==8);
 
     }
+
+    @Test
+    public void collectingPersons(){
+        Stream<CollectablePerson> personas = Stream.of(new CollectablePerson("Juan", 10),
+                new CollectablePerson("Felipe", 20),
+                new CollectablePerson("Fercho", 30),
+                new CollectablePerson("Mariana", 20)
+        );
+        CollectablePerson pn = new CollectablePerson("Jhonatan", 21);
+        CollectablePerson persona = personas.collect(new PersonCollector());
+        System.out.println("persona: " + persona.name);
+    }
+
+    @Test
+    public void marianaTest(){
+        String str = "mariana";
+        Stream<String> stringStream = str.codePoints()
+                .mapToObj(c -> String.valueOf((char) c));
+        stringStream = stringStream.map(s -> {
+                                return s.toUpperCase();
+                            });
+        Optional<String> str2 = stringStream.findFirst();
+        System.out.println(str2);
+        assertEquals("M",str2.orElseGet(()->"NONE"));
+    }
     //Reduce
     //ParalellStreams
     //https://dzone.com/articles/think-twice-using-java-8
-
-
 
 }

@@ -23,7 +23,6 @@ public class CompletableFutureSuite {
         CompletableFuture<String> completableFuture
                 = new CompletableFuture<>();
 
-
         ExecutorService executorService = Executors.newCachedThreadPool();
 
         executorService.submit(() -> {
