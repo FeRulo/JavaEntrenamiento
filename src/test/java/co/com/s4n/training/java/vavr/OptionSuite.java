@@ -31,13 +31,34 @@ public class OptionSuite {
     public void testOptionWithFilter() {
         Option<Integer> o = Option(3);
 
-        assertEquals("Does not Exist the filter",
+        assertEquals("Does Exist",
                 Some(3),
                 o.filter(it -> it >= 3));
 
         assertEquals("Does not Exist the filter",
                 None(),
                 o.filter(it -> it > 3));
+    }
+
+    @Test
+    public void t1(){
+        Option<Integer> o = Option(3);
+        Option<Integer> o2 = o.filter(it -> it > 3);
+        Integer i = o2.getOrElse(666);
+
+        assertEquals("Does not Exist the filter",
+                new Integer(666), i
+                );
+    }
+    @Test
+    public void t2(){
+        Option<Integer> o = Option(3);
+        Option<Integer> o2 = o.filter(it -> it >= 3);
+        Integer i = o2.getOrElse(666);
+
+        assertEquals("Does Exist",
+                new Integer(3), i
+        );
     }
 
     /**
@@ -60,6 +81,7 @@ public class OptionSuite {
         assertEquals("Failure match optionList", "Existe", patternMatchSimple(o1));
         assertEquals("Failure match optionList2", "Imaginario", patternMatchSimple(o2));
     }
+
     /**
      *
      * el metodo peek aplica una funcion lambda o un metodo con el valor de Option cuando esta definido
@@ -71,6 +93,7 @@ public class OptionSuite {
         /* Se debe utilizar una variable mutable para reflejar los efectos colaterales*/
         final List<String> list = new ArrayList<>();
         defined_option.peek(list::add); // the same as defined_option.peek(s -> list.add(s))
+        System.out.println(list.size());
         assertEquals("failed - peek did not return the same Option value",
                 Option.of("Hello!"),
                 defined_option);
@@ -78,6 +101,40 @@ public class OptionSuite {
         assertEquals("failed - peek did not apply the side effect",
                 "Hello!",
                 list.get(0));
+    }
+
+    @Test
+    public void testPeekMethod2(){
+        Option<String> defined_option = None();
+        /* Se debe utilizar una variable mutable para reflejar los efectos colaterales*/
+        final List<String> list = new ArrayList<>();
+        defined_option.peek(list::add); // the same as defined_option.peek(s -> list.add(s))
+        System.out.println(list.size());
+        assertTrue(list.size() == 0);
+    }
+
+    /**
+     * En este test se prueba la funcionalidad para transformar un Option por medio de Map y flatMap
+     */
+    @Test
+    public void testMap1() {
+        Option<String> o1 = Option.of("mi papa");
+
+        Option<String> o2 = o1.map(s -> s + " es bonito");
+
+        assertEquals("Transform Option with Map",
+                Option.of("mi mapa es bonito"),
+                o2);
+    }
+    @Test
+    public void testMap2() {
+        Option<String> o1 = Option.of("mi papa");
+
+        Option<Integer> o2 = o1.map(s -> s.length());
+
+        assertEquals("Transform Option with Map",
+                Option.of(7),
+                o2);
     }
 
     /**
@@ -99,18 +156,33 @@ public class OptionSuite {
         assertEquals("failure - Option was not transformed",
                 Tuple.of("OK", "Hello"),
                 result);
-
     }
 
-    /**
-     * el metodo getOrElse permite obtener el valor de un Option o un sustituto en caso de ser None
-     */
     @Test
-    public void testGetOrElse(){
-        Option<String> defined_option = Option.of("Hello!");
-        Option<String> none = None();
-        assertEquals("failure - getOrElse did not get the current value of Option", "Hello!", defined_option.getOrElse("Goodbye!"));
-        assertEquals("failure - getOrElse did not replace None", "Goodbye!", none.getOrElse("Goodbye!"));
+    public void testOptionTransform2() {
+        Option<Integer> i = Option.of(3);
+        String s = i.transform(op -> op.getOrElse(666)+"Hola");
+        assertEquals("failure - Option was not transformed",
+                "3Hola",
+                s);
+    }
+
+    @Test
+    public void testOptionTransform3() {
+        Option<Integer> i = None();
+        String s = i.transform(op -> "te amo");
+        assertEquals("failure - Option was not transformed",
+                "te amo",
+                s);
+    }
+
+    @Test
+    public void testOptionTransform4() {
+        Option<Integer> i = None();
+        Integer value= i.transform(op -> op.getOrElse(666) + 3);
+        assertEquals("failure - Option was not transformed",
+                new Integer(669),
+                value);
     }
 
     /**
