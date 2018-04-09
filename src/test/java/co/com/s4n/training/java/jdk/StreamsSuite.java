@@ -360,6 +360,7 @@ public class StreamsSuite {
                 new CollectablePerson("Fercho", 30),
                 new CollectablePerson("Mariana", 20)
         );
+        CollectablePerson pn = new CollectablePerson("Jhonatan", 21);
         CollectablePerson persona = personas.collect(new PersonCollector());
         System.out.println("persona: " + persona.name);
     }
@@ -379,8 +380,5 @@ public class StreamsSuite {
     //Reduce
     //ParalellStreams
     //https://dzone.com/articles/think-twice-using-java-8
-
-
-
 
 }

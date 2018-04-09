@@ -23,6 +23,7 @@ public class FunctionSuite {
      */
     @Test
     public void t1() {
+
         Function1<String, String> function1 = Function1.of(this::fun);
         assertTrue("Failure - compose the funtion from reference", function1.apply("Juan").equals("Hello World Juan"));
     }
@@ -32,7 +33,7 @@ public class FunctionSuite {
      */
     private int divideNumber (int a){
         if((a/4)<16){
-            throw new IllegalArgumentException("Number invalid");
+            throw new IllegalArgumentException("invalid Number");
         }
         return a;
     }
