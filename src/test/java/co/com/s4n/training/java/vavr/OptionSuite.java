@@ -9,13 +9,13 @@ import io.vavr.control.Option;
 import static io.vavr.API.None;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import java.util.ArrayList;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
-
-import java.util.List;
 
 import static io.vavr.API.Some;
 import static org.junit.Assert.assertEquals;
@@ -123,7 +123,7 @@ public class OptionSuite {
         Option<String> o2 = o1.map(s -> s + " es bonito");
 
         assertEquals("Transform Option with Map",
-                Option.of("mi mapa es bonito"),
+                Option.of("mi papa es bonito"),
                 o2);
     }
     @Test
@@ -135,6 +135,95 @@ public class OptionSuite {
         assertEquals("Transform Option with Map",
                 Option.of(7),
                 o2);
+    }
+    @Test
+    public void testMap3() {
+        Option<String> o1 = None();
+
+        Option<Integer> o2 = o1.map(s -> {
+            System.out.println("Estoy en el testMap3 y opero desde un None");
+            return s.length();
+        });
+
+        assertEquals("Transform Option with Map",
+                None(),
+                o2);
+    }
+
+    @Test
+    public void testMap4() {
+        Option<String> o1 = Option.of("hola");
+        Option<Option<Integer>> o2 = o1.map(s -> Option.of(s.length()));
+
+        assertEquals("Transform Olption with Map",
+                Option.of(Option.of(4)),
+                o2);
+    }
+
+    @Test
+    public void testMap5() {
+        Option<String> o1 = Option.of(null);
+        System.out.println("Estoy fuera del testMap3 y opero desde un None");
+        Option<Integer> o2 = o1.map(s -> {
+            return s.length();
+        });
+
+        assertEquals("Transform Option with Map",
+                None(),
+                o1);
+    }
+
+    /**
+    * Tallersito
+    */
+    public Option<Integer> maximoPar(List<Integer> lista){
+        return Option.ofOptional(lista.stream()
+                .filter(i -> i % 2 == 0)
+                .max(Comparator.naturalOrder()));
+
+    }
+
+    @Test
+    public void testTallersito(){
+        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7);
+        Option<Integer> max = maximoPar(list);
+        assertEquals(max.getOrElse(666), new Integer(6));
+    }
+
+    @Test
+    public void testTallersito2(){
+        List<Integer> list = Arrays.asList(1,3,5,7,9);
+        Option<Integer> max = maximoPar(list);
+        assertEquals(None(), max);
+    }
+
+    public Option<String> saludar(String s){
+        return Option.of("hola " + s);
+    }
+    public Option<String> emocionar(String s){
+        return Option.of(s + " !!!");
+    }
+    public Option<String> ponerPuntosSuspensivos(String s){
+        return Option.of(s + "...");
+    }
+    @Test
+    public void Tallersote(){
+        Option<String> o1 = saludar("Ing Ferchito");
+        assertEquals( Some(Some("hola Ing Ferchito !!!")), o1.map(s -> emocionar(s)));
+    }
+
+    @Test
+    public void Tallersote2(){
+        Option<String> o1 = saludar("Ing Ferchito")
+                .flatMap(s -> emocionar(s));
+        assertEquals( Some("hola Ing Ferchito !!!"), o1);
+    }
+    @Test
+    public void Tallersote3(){
+        Option<String> o1 = saludar("Ing Ferchito")
+                .flatMap(s -> emocionar(s))
+                .flatMap(s ->ponerPuntosSuspensivos(s));
+        assertEquals( Some("hola Ing Ferchito !!!..."), o1);
     }
 
     /**
