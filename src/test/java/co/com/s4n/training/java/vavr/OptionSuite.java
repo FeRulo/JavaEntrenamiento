@@ -287,8 +287,6 @@ public class OptionSuite {
                 value);
     }
 
-
-
     @Test
     public void testAplicacion0(){
         Person persona = new Person("José", null, "Páez","Carvajal");

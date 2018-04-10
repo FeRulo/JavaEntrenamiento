@@ -5,6 +5,6 @@ import io.vavr.control.Option;
 public class ServicioPersonas{
     public static Option<Regalo> entregarRegalo(Person p){
         return p.segundoApellido.filter(s -> s.length() == 5)
-                .flatMap(s -> Option.of(new Regalo()));
+                .map(s -> new Regalo());
     }
 }
