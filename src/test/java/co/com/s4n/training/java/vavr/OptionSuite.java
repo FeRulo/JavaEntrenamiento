@@ -1,5 +1,8 @@
 package co.com.s4n.training.java.vavr;
 
+import co.com.s4n.training.java.tallerMap.Person;
+import co.com.s4n.training.java.tallerMap.Regalo;
+import co.com.s4n.training.java.tallerMap.ServicioPersonas;
 import org.junit.Test;
 
 
@@ -206,7 +209,8 @@ public class OptionSuite {
     public Option<String> ponerPuntosSuspensivos(String s){
         return Option.of(s + "...");
     }
-    @Test
+    public Option<String> emocionarConNombre(String s){ return None(); }
+
     public void Tallersote(){
         Option<String> o1 = saludar("Ing Ferchito");
         assertEquals( Some(Some("hola Ing Ferchito !!!")), o1.map(s -> emocionar(s)));
@@ -225,6 +229,15 @@ public class OptionSuite {
                 .flatMap(s ->ponerPuntosSuspensivos(s));
         assertEquals( Some("hola Ing Ferchito !!!..."), o1);
     }
+    @Test
+    public void Tallersote4(){
+        Option<String> o1 = saludar("Ing Ferchito")
+                .flatMap(s -> emocionar(s))
+                .flatMap(s ->ponerPuntosSuspensivos(s))
+                .flatMap(s ->emocionarConNombre(s));
+        assertEquals( None(), o1);
+    }
+
 
     /**
      * Un option se puede transformar dada una función
@@ -272,6 +285,52 @@ public class OptionSuite {
         assertEquals("failure - Option was not transformed",
                 new Integer(669),
                 value);
+    }
+
+
+
+    @Test
+    public void testAplicacion0(){
+        Person persona = new Person("José", null, "Páez","Carvajal");
+        assertEquals(persona.toString(),"José Páez Carvajal");
+    }
+
+    @Test
+    public void testAplicacionEntregarPremio(){
+        Person persona = new Person("José", null, "Páez","Carva");
+        assertEquals(ServicioPersonas.entregarRegalo(persona),Option.of(new Regalo()));
+    }
+
+    @Test
+    public void testAplicacionEntregarPremio2(){
+        Person persona = new Person("José", null, "Páez","Carvajal");
+        assertEquals(ServicioPersonas.entregarRegalo(persona),None());
+    }
+
+    public Option<Integer> max(Option<Integer> o1, Option<Integer> o2){
+        return o1.flatMap(i -> o2.filter(i2 ->i2 > i))
+                .orElse(o1)
+                .orElse(o2);
+    }
+    @Test
+    public void testCarlos0(){
+        Option<Integer> maximo = max(Some(3),Some(6));
+        assertEquals(Some(6),maximo );
+    }
+    @Test
+    public void testCarlos1(){
+        Option<Integer> maximo = max(Some(3),None());
+        assertEquals(Some(3),maximo);
+    }
+    @Test
+    public void testCarlos1_2(){
+        Option<Integer> maximo = max(None(),Some(3));
+        assertEquals(Some(3),maximo);
+    }
+    @Test
+    public void testCarlos2(){
+        Option<Integer> maximo = max(None(),None());
+        assertEquals(None(),maximo );
     }
 
     /**
