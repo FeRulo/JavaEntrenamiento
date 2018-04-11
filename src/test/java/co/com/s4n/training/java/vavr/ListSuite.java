@@ -24,7 +24,7 @@ public class ListSuite {
     public void testListOfNull() {
         List<String> list1 = List.of(null);
         list1.get();
-    }gi
+    }
 
     /**
      * Lo que sucede cuando se crea una lista vacía y se llama un método
