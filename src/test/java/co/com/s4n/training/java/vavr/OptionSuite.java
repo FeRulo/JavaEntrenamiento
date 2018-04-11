@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 public class OptionSuite {
 
-
     /**
      * Un option se puede filtar, y mostrar un some() o un none si no encuentra el resultado
      */
