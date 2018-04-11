@@ -1,7 +1,7 @@
 package co.com.s4n.training.java.vavr;
 
 import co.com.s4n.training.java.tallerMap.Person;
-import co.com.s4n.training.java.tallerMap.Regalo;
+import co.com.s4n.training.java.tallerMap.Premio;
 import co.com.s4n.training.java.tallerMap.ServicioPersonas;
 import org.junit.Test;
 
@@ -14,7 +14,6 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$None;
@@ -238,7 +237,29 @@ public class OptionSuite {
         assertEquals( None(), o1);
     }
 
-
+    public Option<Integer> esPar(Integer a){
+        System.out.println("validando");
+        return Option.of(a).filter(i-> i % 2 == 0);
+    }
+    public Option<Integer> sumar(Integer a){
+        return Option.of(a + 1);
+    }
+    @Test
+    public void testEncadenamiento(){
+        Option<Integer> o = esPar(2)
+                .flatMap(i -> esPar(4)
+                .flatMap(i2 -> esPar(6)
+                .flatMap(i3-> Option.of(i+i2+i3))));
+        assertEquals( o, Some(12));
+    }
+    @Test
+    public void testEncadenamiento2(){
+        Option<Integer> o = esPar(2)
+                .flatMap(i -> esPar(5)
+                .flatMap(i2 -> esPar(6)
+                .flatMap(i3-> Option.of(i+i2+i3))));
+        assertEquals( o, None());
+    }
     /**
      * Un option se puede transformar dada una función
      */
@@ -296,7 +317,7 @@ public class OptionSuite {
     @Test
     public void testAplicacionEntregarPremio(){
         Person persona = new Person("José", null, "Páez","Carva");
-        assertEquals(ServicioPersonas.entregarRegalo(persona),Option.of(new Regalo()));
+//        assertEquals(ServicioPersonas.entregarRegalo(persona),Option.of(new Premio()));
     }
 
     @Test

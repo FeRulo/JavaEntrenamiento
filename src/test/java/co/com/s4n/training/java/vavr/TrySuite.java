@@ -85,7 +85,6 @@ public class TrySuite {
     }
 
 
-
     /**
      * La funcionalidad AndThen usa el parametro de salida de la anterior funcion cómo
      * parametro de entrada de la siguiente función.
@@ -96,8 +95,7 @@ public class TrySuite {
                 .andThen(arr -> arr.add(10))
                 .andThen(arr -> arr.add(30))
                 .andThen(arr -> arr.add(20))
-                .map(arr -> arr.get(1));
-
+                .map(arr -> arr.get(10));
         assertEquals("Failure - it should return the value in the 1st position",
                 Try.success(30).toString(),
                 actual.toString());
@@ -123,8 +121,9 @@ public class TrySuite {
      */
     @Test(expected = Error.class)
     public void testFailTransformWhen() {
-        Try<Integer> error = Try.of(() -> {throw new Error("Error 1"); });
-        error.transform(self -> self.get() + " example of text");
+        Try<Integer> error = Try.of(() -> {throw new Error("Error de Jhonatan"); });
+        System.out.println(error);
+        String str = error.transform(self -> self.get() + " example of text");
     }
 
     /**
@@ -136,15 +135,18 @@ public class TrySuite {
         CheckedFunction2<Integer, Integer, Integer> divide = (dividend, divisor) -> dividend / divisor;
 
         Try<Integer> result = Try.of(() -> divide.apply(3, 1));
-
-        Function1<Try<Integer>, Try<Integer>> mapper = try_var -> try_var
-                .flatMap(i -> Try.of(() -> i * 10))
-                .flatMap(i_10 -> Try.of(() -> i_10 * 10));
+        System.out.println(result);
+        Function1<Try<Integer>,Try<Integer>> mapper = try_var -> {
+            System.out.println("operando");
+            return try_var
+                    .flatMap(i -> Try.of(() -> i * 10))
+                    .flatMap(i_10 -> Try.of(() -> i_10 * 10));
+        };
 
         Try<Integer> success_example = mapper.apply(result);
 
         assertEquals("failed - flatMap on success try case wasn't working as expected",
-                Try.of(() -> 300),
+                Success(300),
                 success_example);
     }
 
@@ -154,10 +156,18 @@ public class TrySuite {
     @Test
     public void testFlatMap() {
         CheckedFunction2<Integer, Integer, Integer> divide = (dividend, divisor) -> dividend / divisor;
-        Function1<Try<Integer>,Try<Integer>> mapper = try_var -> try_var.flatMap(i ->Try.of(() -> i * 10))
-                .flatMap(i_10 -> Try.of(() -> i_10 * 10));
+        Function1<Try<Integer>,Try<Integer>> mapper = try_var -> {
+            System.out.println("operando");
+            return try_var
+                    .flatMap(i -> {
+                        System.out.println("operando2");
+                        return Try.of(() ->  i * 10);})
+                    .flatMap(i_10 -> Try.of(() -> i_10 * 10));
+        };
+
         Try<Integer> exception = Try.of(() -> divide.apply(3,0));
         Try<Integer> fail_example = mapper.apply(exception);
+        System.out.println(fail_example.toString());
         assertEquals("failed - flatMap on failed try case wasn't working as expected",
                 failure(new ArithmeticException("/ by zero")).toString(),
                 fail_example.toString());
@@ -171,6 +181,7 @@ public class TrySuite {
         CheckedFunction2<Integer, Integer, Integer> divide = (a, b) -> a / b;
         CheckedFunction2<Integer, Integer, Integer> multiply = (a, b) -> a * b;
         Try<Integer> tryToDivide = Try.of(() -> divide.apply(70, 2));
+
         Try<Integer> tryToMultiply = tryToDivide.andThenTry(i -> multiply.apply(i, 2));
         assertTrue("failure - The chaining of tries failed", tryToMultiply.isSuccess());
         tryToDivide = Try.of(() -> divide.apply(70, 0));
@@ -196,6 +207,22 @@ public class TrySuite {
         });
         assertTrue("failure - The chaining of tries failed", tryToMultiply.isSuccess());
     }
+    @Test
+    public void testAndThenWithChecked2() {
+        CheckedFunction2<Integer, Integer, Integer> divide = (a, b) -> a / b;
+        CheckedFunction2<Integer, Integer, Integer> multiply = (a, b) -> a * b;
+        Try<Integer> tryToDivide = Try.of(() -> divide.apply(70, 0));
+        Try<Integer> tryToMultiply = tryToDivide.andThen(i -> {
+            try {
+                System.out.println("dentro de try");
+                multiply.apply(i, 2);
+            } catch (Throwable throwable) {
+                System.out.println("dentro de catch");
+                throwable.printStackTrace();
+            }
+        });
+        assertTrue("failure - The chaining of tries failed", tryToDivide.isFailure());
+    }
 
     /**
      * Collect permite aplicar una funcion parcial a un Try
@@ -212,10 +239,11 @@ public class TrySuite {
             public boolean isDefinedAt(Double i) {
                 return i >= 0;
             }
+
         };
-        Try<Double> valid = Try.of(() -> 25.0);
+        Try<Double> valid = Try.of(()->16D);
         assertEquals("failed - Partial function was not applied correctly for a value of its domain",
-                Try.of(() -> 5.0),
+                Try.of(() -> 4D),
                 valid.collect(square_root));
 
         Try<Double> invalid = Try.of(() -> -25.0);
@@ -232,6 +260,62 @@ public class TrySuite {
         Try<String> try_stream = Try.withResources(() -> stream).of(s -> s.toString());
         assertTrue("Failure - try was not successfully created", try_stream.isSuccess());
         stream.count();
+    }
+
+    public Try<Double> dividir(Double numerador, Double denominador){
+        return Try.of(()->numerador / denominador);
+    }
+    @Test
+    public void testInception(){
+        Try<Double> t1 = dividir(2D,1D);
+        Try<Double> t2 = dividir(3D,1D);
+        Try<Double> t3 = dividir(6D,3D);
+        Try<Double> tf = t1
+                .flatMap(d -> t2
+                .flatMap(d2 -> t3
+                .flatMap(d3 -> Try.of(()-> d + d2 + d3))));
+        assertEquals(Success(7D), tf);
+    }
+
+    @Test
+    public void testInception2(){
+        Try<Double> tf = dividir(2D,1D)
+                .flatMap(d -> dividir(3D, 1D)
+                .flatMap(d2 -> dividir(6D,3D)
+                .flatMap(d3 -> Try.of(()->d + d2 + d3))));
+        assertEquals(Success(7D), tf);
+    }
+
+    public Try<Double> sumar(Double d){
+        return Try(()->d+1);
+    }
+
+    @Test
+    public void testKarateKid(){
+        Try<Double> tf = dividir(2D,1D)
+                .flatMap(d -> dividir(3D, 1D)
+                .flatMap(d2 -> dividir(6D,3D)
+                .flatMap(d3 -> sumar(d + d2 + d3))));
+        assertEquals(Success(8D), tf);
+    }
+
+    public Try<Integer> sumarLog(Integer d){
+        System.out.println("en sumar");
+        return Try.of(()->d+1);
+    }
+    public Try<Integer> dividirLog(Integer num, Integer den){
+        System.out.println("en dividir");
+        return Try.of(()->num/den);
+    }
+
+    @Test
+    public void testKarateKid2(){
+        Try<Integer> tf = dividirLog(2,1)
+                .flatMap(d -> dividirLog(3, 0)
+                .flatMap(d2 -> dividirLog(6,3)
+                .flatMap(d3 -> sumarLog(d + d2 + d3))));
+        System.out.println(tf);
+        assertTrue(tf.isFailure());
     }
 
     /**
