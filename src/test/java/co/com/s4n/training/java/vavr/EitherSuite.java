@@ -26,12 +26,20 @@ public class EitherSuite {
      * Se valida la funcion swap con un Either right y left en la cual se aplica swap para el cambio de tipo Either
      */
     @Test
-    public void swapToEither() {
+    public void swapToEitherLeft() {
+        Either<Integer,String> myEitherL = Either.left(14);
+        assertTrue("Valide swap before in Either Left", myEitherL.isLeft());
+    }
+    @Test
+    public void swapToEitherRight() {
+        Either<Integer,String> myEitherR = Either.right("String");
+        assertTrue("Valide swap before in Either Right", myEitherR.isRight());
+    }
+    @Test
+    public void swapToEitherSwap() {
         Either<Integer,String> myEitherR = Either.right("String");
         Either<Integer,String> myEitherL = Either.left(14);
-        assertTrue("Valide swap before in Either Right", myEitherR.isRight());
         assertTrue("Valide swap after in Either Right", myEitherR.swap().isLeft());
-        assertTrue("Valide swap before in Either Left", myEitherL.isLeft());
         assertTrue("Valide swap after in Either Right", myEitherL.swap().isRight());
     }
 

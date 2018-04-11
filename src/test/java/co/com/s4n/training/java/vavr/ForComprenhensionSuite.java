@@ -28,20 +28,20 @@ public class ForComprenhensionSuite {
     public void testEncadenamientoTry1(){
         Try<Integer> t =
                 For(dividir(2,1), i->
-                        For(dividir(3,1), i2 ->
-                                For(dividir(6,3), i3 ->
-                                       sumar(i+i2+i3)
-                                ))).toTry();
+                For(dividir(3,1), i2 ->
+                For(dividir(6,3), i3 ->
+                sumar(i+i2+i3)
+                ))).toTry();
         assertEquals( t, Success(8));
     }
     @Test
     public void testEncadenamientoTry2() {
         Try<Integer> o =
                 For(dividir(2, 1), i ->
-                        For(dividir(3, 0), i2 ->
-                                For(dividir(6, 3), i3 ->
-                                        sumar(i + i2 + i3)
-                                ))).toTry();
+                For(dividir(3, 0), i2 ->
+                For(dividir(6, 3), i3 ->
+                sumar(i + i2 + i3)
+                ))).toTry();
         assertEquals(o, None());
     }
     /*
