@@ -3,7 +3,10 @@ package co.com.s4n.training.java.vavr;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
+import io.vavr.control.Option;
 import org.junit.Test;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static io.vavr.collection.Iterator.empty;
@@ -32,32 +35,44 @@ public class ListSuite {
     @Test
     public void testZipOnEmptyList() {
         List<String> list = List.of();
-        assertTrue("Failure - List should be empty",list.isEmpty());
+        assertTrue("Failure - List should be empty", list.isEmpty());
         list.zip(empty());
     }
 
     @Test
-    public void testHead(){
-        List<Integer> list1 = List.of(1,2,3);
+    public void testHead() {
+        List<Integer> list1 = List.of(1, 2, 3);
         Integer head = list1.head();
         assertEquals(head, new Integer(1));
     }
 
     @Test
-    public void testTail(){
-        List<Integer> list1 = List.of(1,2,3);
-        List<Integer> expectedTail = List.of(2,3);
+    public void testTail() {
+        List<Integer> list1 = List.of(1, 2, 3);
+        List<Integer> expectedTail = List.of(2, 3);
         List<Integer> tail = list1.tail();
         assertEquals(tail, expectedTail);
     }
 
     @Test
-    public void testZip(){
-        List<Integer> list1 = List.of(1,2,3);
-        List<Integer> list2 = List.of(1,2,3);
+    public void testTail2() {
+        List<Integer> list1 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Integer value = list1
+                .tail()
+                .tail()
+                .tail()
+                .head();
+        assertTrue(value == 4);
+    }
+
+
+    @Test
+    public void testZip() {
+        List<Integer> list1 = List.of(1, 2, 3);
+        List<Integer> list2 = List.of(1, 2, 3);
         List<Tuple2<Integer, Integer>> zippedList = list1.zip(list2);
-        assertEquals(zippedList.head(), Tuple.of(new Integer(1), new Integer(1)) );
-        assertEquals(zippedList.tail().head(), Tuple.of(new Integer(2), new Integer(2)) );
+        assertEquals(zippedList.head(), Tuple.of(new Integer(1), new Integer(1)));
+        assertEquals(zippedList.tail().head(), Tuple.of(new Integer(2), new Integer(2)));
     }
 
     /**
@@ -67,17 +82,39 @@ public class ListSuite {
     public void testListIsImmutable() {
         List<Integer> list1 = List.of(0, 1, 2);
         List<Integer> list2 = list1.map(i -> i);
-        assertEquals(List.of(0, 1, 2),list1);
-        assertNotSame(list1,list2);
+        assertEquals(List.of(0, 1, 2), list1);
+        assertNotSame(list1, list2);
     }
 
-    public String nameOfNumer(int i){
-        switch(i){
-            case 1: return "uno";
-            case 2: return "dos";
-            case 3: return "tres";
-            default: return "idk";
+    public String nameOfNumer(int i) {
+        switch (i) {
+            case 1:
+                return "uno";
+            case 2:
+                return "dos";
+            case 3:
+                return "tres";
+            default:
+                return "idk";
         }
+    }
+
+    public List<Integer> listarPares(List<Integer> l) {
+        return l.filter(i -> i % 2 == 0);
+    }
+
+    @Test
+    public void testListarPar(){
+        Option<List<Integer>> o= List.of(1,2,3,4,5).tailOption();
+        List<Integer> list = o.flatMap(l->Option.of(listarPares(l))).getOrElse(List.of());
+        assertEquals(list, List.of(2,4));
+    }
+
+    @Test
+    public void testListarPar2(){
+        Option<List<Integer>> o= List.of(1,3,5).tailOption();
+        List<Integer> list = o.flatMap(l->Option.of(listarPares(l))).getOrElse(List.of());
+        assertEquals(list, List.of());
     }
 
     @Test

@@ -19,12 +19,9 @@ import static io.vavr.API.*;
 import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
 
-<<<<<<< HEAD
 import java.util.List;
 import java.util.Optional;
 
-=======
->>>>>>> feature/vavr
 import static io.vavr.API.Some;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -99,15 +96,12 @@ public class OptionSuite {
         Option<String> defined_option = Option.of("Hello!");
         /* Se debe utilizar una variable mutable para reflejar los efectos colaterales*/
         final List<String> list = new ArrayList<>();
-<<<<<<< HEAD
         Option<String> peek = defined_option.peek(list::add);// the same as defined_option.peek(s -> list.add(s))
 
         System.out.println("peek: "+ peek);
 
-=======
         defined_option.peek(list::add); // the same as defined_option.peek(s -> list.add(s))
         System.out.println(list.size());
->>>>>>> feature/vavr
         assertEquals("failed - peek did not return the same Option value",
                 Option.of("Hello!"),
                 defined_option);

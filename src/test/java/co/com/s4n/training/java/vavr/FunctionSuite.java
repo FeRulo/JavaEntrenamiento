@@ -216,11 +216,6 @@ public class FunctionSuite {
         Function4<String, String, String, String, Integer> totalLength = (a, b, c, d) ->
                 a.length() + b.length() + c.length() + d.length();
 
-<<<<<<< HEAD
-=======
-        Function1<String , Function1<String ,Function1<String ,Function1<String ,Integer>>>> v1 = totalLength.curried();
->>>>>>> feature/vavr
-
         Function1<String, Function1<String, Integer>> add2 = totalLength
                 .curried()
                 .apply("a")
