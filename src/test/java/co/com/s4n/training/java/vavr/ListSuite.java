@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 /**
  *  Getting started de la documentacion de vavr http://www.vavr.io/vavr-docs/#_collections
- *  Javadoc de vavr collections https://static.javadoc.io/io.vavr/vavr/0.9.0/io/vavr/collection/package-frame.html1
+ *  Javadoc de vavr collections https://static.javadoc.io/io.vavr/vavr/0.9.0/io/vavr/collection/package-frame.html
  */
 
 public class ListSuite {
