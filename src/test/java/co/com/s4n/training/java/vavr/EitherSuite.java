@@ -1,5 +1,7 @@
 package co.com.s4n.training.java.vavr;
 
+import co.com.s4n.training.java.tallerEither.A;
+import co.com.s4n.training.java.tallerEither.B;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import java.io.Serializable;
 import static org.junit.Assert.assertArrayEquals;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static io.vavr.API.*;
@@ -27,12 +30,16 @@ public class EitherSuite {
      */
     @Test
     public void swapToEitherLeft() {
+
         Either<Integer,String> myEitherL = Either.left(14);
+
         assertTrue("Valide swap before in Either Left", myEitherL.isLeft());
+
     }
     @Test
     public void swapToEitherRight() {
         Either<Integer,String> myEitherR = Either.right("String");
+
         assertTrue("Valide swap before in Either Right", myEitherR.isRight());
     }
     @Test
@@ -50,15 +57,30 @@ public class EitherSuite {
      * sino el lado izquierdo sera un mensaje que diga either incorrecto.
      */
     @Test
-    public void testProjection(){
+    public void testProjectionRight(){
         Either<Integer,Integer> e1 = Either.right(5);
-        Either<Integer,Integer> e2 = Either.left(5);
+
 
         //El Either por defecto cuando se usa el map opera con el lado derecho.
         assertEquals("Failure - Right projection", Right(10), e1.map(it -> it + 5));
+    }
+    @Test
+    public void testProjectionLeft(){
+
+        Either<Integer,Integer> e2 = Either.left(5);
 
         //El Either para operar el lado izquierdo se debe usar un mapLeft.
         assertEquals("Failure - Left Projection", Left(10), e2.mapLeft(it -> it + 5));
+    }
+    @Test
+    public void testProjectionLeftMap(){
+
+        Either<Integer,Integer> e2 = Either.left(5);
+        Either<Integer, Object> test = Either.left(10);
+        Either<Integer, Integer> test1 = e2.mapLeft(it -> it + 5);
+
+        //El Either para operar el lado izquierdo se debe usar un mapLeft.
+        assertEquals("Failure - Left Projection", test, test1);
     }
 
     /**
@@ -102,6 +124,44 @@ public class EitherSuite {
 
     }
 
+
+    public Either<String,Integer> dividir(Integer a, Integer b) {
+        return (b==0)?Left("No se puede dividir por cero"):Right(a/b);
+    }
+
+    public Either<String,Integer> dividir1(Integer a, Integer b) {
+        return Either.right(b)
+                .filter(i->i!=0)
+                .getOrElse(Either.left("No se puede dividir por cero"))
+                .mapLeft(s->""+s)
+                .map(i-> a/i);
+    }
+    @Test
+    public void testEitherFilterdividircero() {
+
+        Either<String,Integer> value = Either.right(10);
+        Either<String,Integer> value2 = Either.right(0);
+
+        Either<String, Integer> result = value
+                .flatMap(i -> value2
+                .flatMap(i2 -> dividir1(i, i2)));
+
+        System.out.println(result);
+
+        assertEquals(Left("No se puede dividir por cero"),result);
+    }
+    @Test
+    public void testEitherFilterdividir() {
+
+        Either<String,Integer> value = Either.right(10);
+        Either<String,Integer> value2 = Either.right(5);
+
+        Either<String, Integer> result = value.flatMap(i -> value2.flatMap(i2 -> dividir(i, i2)));
+
+        System.out.println(result);
+
+        assertEquals(Right(2),result);
+    }
     /**
      * Un Either puede ser filtrado, y en el predicado se pone la condicion
      */
@@ -112,6 +172,15 @@ public class EitherSuite {
 
         assertEquals("value is even",
                 None(),
+                value.filter(it -> it % 2 == 0));
+    }
+    @Test
+    public void testEitherFilterSome() {
+
+        Either<String,Integer> value = Either.right(6);
+
+        assertEquals("value is even",
+                Option.of(Right(6)),
                 value.filter(it -> it % 2 == 0));
     }
 
@@ -130,7 +199,7 @@ public class EitherSuite {
      */
     @Test
     public void testEitherBiMap() {
-        Function1<String,String> left = (Function1<String , String>) string -> "this the left";
+        Function1<String,String> left = (Function1<String , String>) string -> "this is the left";
         Function1<Integer,Integer> right = (Function1<Integer,Integer>) integer -> integer + 15;
 
         Function1<Either,Either> biMap = (Function1<Either, Either>) either ->
@@ -140,7 +209,7 @@ public class EitherSuite {
         Either<String,Integer> value2 = Either.left("this is some");
 
         assertEquals("Failure map in right", Either.right(20),biMap.apply(value));
-        assertEquals("Failure map in left", Either.left("this the left"),biMap.apply(value2));
+        assertEquals("Failure map in left", Either.left("this is the left"),biMap.apply(value2));
     }
 
     /**
@@ -161,6 +230,8 @@ public class EitherSuite {
         myEitherL.orElseRun(addIfTrue);
         assertEquals("Valide swap before in Either Right",
                 "let's dance! 14", result[0]);
+
+
     }
 
     /**
@@ -237,12 +308,48 @@ public class EitherSuite {
                 copy);
     }
 
+    public class C extends A { }
+    public class D extends B { }
+    @Test
+    public void testNarrowclass(){
+
+        Either<C, D> either=null;
+
+        Either<A, B> tes = Either.narrow(either);
+
+        System.out.println(tes);
+
+    }
+
+
     /**
      * Las proyecciones de Either se pueden transformar con fold.
      * Retorna por defecto la proyección derecha si el Either tiene dicha proyección.
      */
     @Test
-    public void testFoldRight(){
+    public void testFoldRightsimple(){
+        Either<String,Integer> e1=Either.right(1);
+        Serializable testright = e1.fold(i -> i, i -> i + 1);
+
+        System.out.println(testright);
+
+        assertEquals(2,testright);
+    }
+
+    @Test
+    public void testFoldLeftsimple(){
+        Either<String,Integer> e1=Either.left("Test");
+        Serializable testleft = e1.fold(i -> i + " fold", i -> i + 1);
+
+        System.out.println(testleft);
+
+        assertEquals("Test fold",testleft);
+    }
+
+    @Test
+    public void testFoldRightSimple(){
+
+
         String[] actual = transform("text_to_transform", true).fold(l -> l.split("_"), r -> r.split("_"));
         String[] expected = {"TEXT", "TO", "TRANSFORM"};
         assertArrayEquals("The arrays were not the same", expected, actual);
@@ -271,8 +378,6 @@ public class EitherSuite {
         if (hasRightProjection) either = Either.right(s.toUpperCase());
         return either;
     }
-
-
 
     /**
      * Aunque la documentación de fold either dice que el tipado de los mapper para cada proyección
