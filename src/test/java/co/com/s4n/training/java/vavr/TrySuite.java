@@ -11,6 +11,7 @@ import static io.vavr.Patterns.*;
 import static junit.framework.TestCase.assertEquals;
 import io.vavr.PartialFunction;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import java.util.List;
@@ -89,16 +90,14 @@ public class TrySuite {
      * La funcionalidad AndThen usa el parametro de salida de la anterior funcion cómo
      * parametro de entrada de la siguiente función.
      */
-    @Test
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testSuccessAndThen() {
         Try<Integer> actual = Try.of(() -> new ArrayList<Integer>())
                 .andThen(arr -> arr.add(10))
                 .andThen(arr -> arr.add(30))
                 .andThen(arr -> arr.add(20))
                 .map(arr -> arr.get(10));
-        assertEquals("Failure - it should return the value in the 1st position",
-                Try.success(30).toString(),
-                actual.toString());
+        actual.get();
     }
 
 
@@ -383,8 +382,19 @@ public class TrySuite {
     public void testFilterToTry() {
         Try<Integer> myFilterSuccess =  Try.of(()-> 12 ).filter(x -> x%3==0);
         Try<Integer> myFilterFailure =  Try.of(()-> 12 ).filter(x -> x%3/0==0);
+        System.out.println(myFilterSuccess);
         assertTrue("Failed - Error nor controlled", myFilterFailure.isFailure());
         assertEquals("Failed - Error nor controlled", Success(12), myFilterSuccess);
+    }
+    @Test
+    public void testFilterToTry2() {
+        Try<Integer> myFilterSuccess =  Try.of(()-> 13 ).filter(x -> x%3==0);
+        Try<Integer> myFilterFailure =  Try.of(()-> 12 ).filter(x -> x%3/0==0);
+        System.out.println(myFilterSuccess);
+        assertTrue("Failed - Error nor controlled", myFilterFailure.isFailure());
+        assertEquals("Failed - Error nor controlled",
+                Try.failure( new NoSuchElementException("Predicate does not hold for 13")).toString(),
+                myFilterSuccess.toString());
     }
 
     /**

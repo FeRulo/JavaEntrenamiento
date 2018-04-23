@@ -7,6 +7,8 @@ import io.vavr.control.Option;
 import org.junit.Test;
 
 
+import java.awt.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static io.vavr.collection.Iterator.empty;
@@ -123,6 +125,20 @@ public class ListSuite {
         List<Integer> list1 = List.of(1, 2, 3);
         List<String> list2 = list1.map(i -> nameOfNumer(i));
 
+        assertEquals(list2, List.of("uno", "dos", "tres"));
+        assertEquals(list1, List.of(1,2,3));
+
+    }
+
+    @Test
+    public void testMap2(){
+        final Integer[] colector = {0};
+        List<Integer> list1 = List.of(1, 2, 3);
+        List<String> list2 = list1.map(i -> {
+            colector[0] += i;
+            return nameOfNumer(i);
+        });
+        System.out.println(colector[0]);
         assertEquals(list2, List.of("uno", "dos", "tres"));
         assertEquals(list1, List.of(1,2,3));
 

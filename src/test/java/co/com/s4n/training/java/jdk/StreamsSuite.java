@@ -240,17 +240,13 @@ public class StreamsSuite {
 
     @Test
     public void testStreams15() {
-
         Supplier<Stream<String>> streamSupplier =
                 () -> Stream.of("d2", "a2", "b1", "b3", "c")
                         .filter(s -> s.startsWith("a"));
-
         boolean b = streamSupplier.get().anyMatch(s -> true);
         boolean b1 = streamSupplier.get().noneMatch(s -> true);
-
         assert(b);
-        assert(b1);
-
+        assert(!b1);
     }
 
 

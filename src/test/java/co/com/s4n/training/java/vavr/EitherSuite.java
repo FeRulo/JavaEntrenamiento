@@ -10,6 +10,8 @@ import static io.vavr.API.Left;
 import static io.vavr.API.None;
 import static io.vavr.API.Right;
 
+import java.nio.file.NoSuchFileException;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.io.Serializable;
 import static org.junit.Assert.assertArrayEquals;
@@ -32,14 +34,23 @@ public class EitherSuite {
     public void swapToEitherLeft() {
 
         Either<Integer,String> myEitherL = Either.left(14);
-
         assertTrue("Valide swap before in Either Left", myEitherL.isLeft());
 
+    }
+    @Test(expected = NoSuchElementException.class)
+    public void EitherGet() {
+        Either<Integer, String> myEitherL = Either.left(14);
+        System.out.println(myEitherL.get() + "");
+    }
+    @Test(expected = NoSuchElementException.class)
+    public void EitherGetLeft() {
+        Either<Integer,String> myEitherR = Either.right("String");
+        System.out.println(myEitherR.getLeft() + "");
     }
     @Test
     public void swapToEitherRight() {
         Either<Integer,String> myEitherR = Either.right("String");
-
+        System.out.println(myEitherR.get());
         assertTrue("Valide swap before in Either Right", myEitherR.isRight());
     }
     @Test
@@ -135,6 +146,18 @@ public class EitherSuite {
                 .getOrElse(Either.left("No se puede dividir por cero"))
                 .mapLeft(s->""+s)
                 .map(i-> a/i);
+    }
+    @Test
+    public void testForEach() {
+        Either<String,Double> e = Either.right( 2.0 / 3);
+        e.forEach(d-> System.out.println(d));
+        Either<String,Double> e2 = Either.left("hola");
+        e2.forEach(d-> System.out.println(d));
+    }
+    @Test
+    public void testForEach2() {
+        Either<String,Double> e2 = Either.left("hola");
+        e2.forEach(d-> System.out.println(d));
     }
     @Test
     public void testEitherFilterdividircero() {

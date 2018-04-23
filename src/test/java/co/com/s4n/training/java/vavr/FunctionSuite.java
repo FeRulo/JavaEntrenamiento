@@ -268,7 +268,7 @@ public class FunctionSuite {
         assertEquals("failure - the function read the file successfully", "ERROR", readFile2.apply("somefile.txt"));
     }
 
-    @Test
+    @Test(expected = FileNotFoundException.class)
     public void t7_1() throws Throwable{
 
         CheckedFunction1<String, String> readFile = new CheckedFunction1<String, String>() {
@@ -283,10 +283,10 @@ public class FunctionSuite {
                 return "OK";
             }
         };
-        assertEquals("failure - the function read the file successfully", "ERROR", readFile.apply("somefile.txt"));
+        readFile.apply("somefile.txt");
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void t7_2(){
         Function1<String, String> readFile2 = new Function1<String, String>() {
             @Override

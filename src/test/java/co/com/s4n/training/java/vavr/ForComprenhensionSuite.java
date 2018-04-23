@@ -4,6 +4,7 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import static io.vavr.API.*;
@@ -34,7 +35,7 @@ public class ForComprenhensionSuite {
                 ))).toTry();
         assertEquals( t, Success(8));
     }
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testEncadenamientoTry2() {
         Try<Integer> o =
                 For(dividir(2, 1), i ->
@@ -42,7 +43,7 @@ public class ForComprenhensionSuite {
                 For(dividir(6, 3), i3 ->
                 sumar(i + i2 + i3)
                 ))).toTry();
-        assertEquals(o, None());
+        o.get();
     }
     /*
     * Pruebas de Option
